@@ -1,0 +1,123 @@
+﻿<UserControl x:Class="Reservation_SystemWPF.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Background="AliceBlue"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border Width="300"
+            Height="400"
+            Background="White"
+            CornerRadius="6">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15"
+                              Direction="-90" 
+                              RenderingBias="Quality" 
+                              ShadowDepth="2" 
+                              Color="Gray" />
+        </Border.Effect>
+        <StackPanel Orientation="Vertical"
+                    Margin="20">
+            <TextBlock Text="Login" 
+                       FontSize="25"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       FontWeight="Bold"
+                       Padding="8"/>
+
+            <Grid VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Username -->
+                <TextBlock Text="User Name" 
+                           Grid.Row="0"
+                           Margin="0,15,0,5"
+                           HorizontalAlignment="Left"/>
+                <TextBox Grid.Row="1"
+                         Padding="5"
+                         Width="255"
+                         BorderThickness="0,0,0,1"
+                         HorizontalAlignment="Left"
+                         
+                         
+                         Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!-- Phone -->
+                <TextBlock Text="Phone" 
+                           Grid.Row="2"
+                           Margin="0,15,0,5"
+                           HorizontalAlignment="Left"/>
+                <PasswordBox Grid.Row="3"
+                             Padding="5"
+                             Width="255"
+                             BorderThickness="0,0,0,1"
+                             HorizontalAlignment="Left"
+                             PasswordChanged="PasswordBox_PasswordChanged"/>
+            </Grid>
+
+            <TextBlock Text="Forgot password?" 
+                       HorizontalAlignment="Right"
+                       Foreground="Blue"
+                       Cursor="Hand"
+                       Margin="0,5,0,0"/>
+
+            <!-- Login Button -->
+            <Button Content="Login" 
+                    Foreground="White"
+                    Background="Black"
+                    Margin="0,25"
+                    Height="35"
+                    Width="250"
+                    Command="{Binding LoginCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border x:Name="LoginBorder" Background="{TemplateBinding Background}"
+                                            CornerRadius="16">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="AliceBlue" TargetName="LoginBorder"  />
+                                            <Setter Property="TextBlock.Foreground" Value="Black"  TargetName="LoginBorder" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <TextBlock Text="Not a member?" 
+                       Margin="0,5"
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Sign Up"
+           Margin="0,10"
+           HorizontalAlignment="Center"
+           Foreground="Blue" 
+           Cursor="Hand"
+           MouseLeftButtonDown="SignUp_Click"
+           RenderTransformOrigin="0.466,-0.81" Height="24">
+                <TextBlock.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="1.549"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

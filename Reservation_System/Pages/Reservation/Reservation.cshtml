@@ -1,0 +1,226 @@
+﻿@page
+@model Reservation_System.Pages.Reservation.CreateReservationModel
+@{
+    ViewData["Title"] = "Reservation";
+}
+@{
+    ViewBag.HideNavbar = true;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<div class="overlay">
+    <div class="top-bar d-flex justify-content-center align-items-center px-4 py-3">
+        <h1 class="welcome-text">Welcome <span>SunnyCorner</span></h1>
+    </div>
+
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="reservation-card shadow-lg p-4 rounded-4">
+            <h2 class="mb-4 text-center">Make a reservation</h2>
+
+            <div id="errorMsg" class="alert alert-danger" style="display:none;"></div>
+            <div id="successMsg" class="alert alert-success" style="display:none;"></div>
+
+            <form id="reservationForm">
+                <input type="hidden" id="userId" value="@Model.UserId" />
+
+                <div class="mb-3">
+                    <label for="categoryId" class="form-label">Category</label>
+                    <select id="categoryId" class="form-select" required>
+                        <option value="">Seçiniz</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.CategoryId">@category.CategoryName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3 position-relative">
+                    <label for="reservationDate" class="form-label">Reservation Date</label>
+                    <input id="reservationDate" type="date" class="form-control form-input" required />
+                </div>
+
+                <div class="mb-3 position-relative">
+                    <label for="peopleCount" class="form-label">People Count</label>
+                    <input id="peopleCount" type="number" class="form-control form-input" required />
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-custom">Save</button>
+                </div>
+            </form>
+
+            <!-- Ana Sayfa Butonu -->
+            <div class="text-center mt-4">
+                <Button id="LogoutBtn" href="/Index" class="btn btn-outline-dark home-btn">LOGOUT</Button>
+                <a id="ListBtn" href="/Reservation/GetReservations" class="btn btn-outline-dark home-btn">LIST RESERVATION</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: url('/images/gg.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .overlay {
+        background: rgba(0, 0, 0, 0.5);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .welcome-text {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+        .welcome-text span {
+            background: linear-gradient(90deg, #ff9966, #ff5e62);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+    .reservation-card {
+        max-width: 600px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+    }
+
+    .form-input {
+        border-radius: 30px;
+        padding-left: 20px;
+    }
+
+    .btn-custom {
+        border-radius: 30px;
+        padding: 12px;
+        font-weight: 600;
+        background: linear-gradient(to right, #DE563E, #C72E14);
+        border: none;
+        
+    }
+
+        .btn-custom:hover {
+            opacity: 0.9;
+        }
+
+    .home-btn {
+        border-radius: 30px;
+        font-weight: 600;
+        padding: 10px 20px;
+    }
+
+    #errorMsg, #successMsg {
+        border-radius: 15px;
+        text-align: center;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#reservationForm').on("submit", function (e) {
+            e.preventDefault();
+            
+            var reservationDto={
+                UserId: parseInt($("#userId").val()),
+                CategoryId: parseInt($("#categoryId").val()),
+                ReservationDate: $("#reservationDate").val(),
+                PeopleCount: parseInt($("#peopleCount").val())
+            };
+
+           $.ajax({
+                    url: "https://localhost:7067/api/Reservation",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(reservationDto),
+                success: function (data) {
+                    if (data.hasError) {
+                        $("#errorMsg").show().text(data.message || "Hata oluştu.");
+                        $("#successMsg").hide();
+                    } else {                        
+                        $("#errorMsg").hide();
+                         $("#successMsg").show().text("Reservation saved");
+                        $("#reservationForm")[0].reset();
+                        
+                    }
+                },
+                error: function () {
+                    $("#errorMsg").show().text("Sunucuya bağlanılamadı.");
+                    $("#successMsg").hide();
+                }
+            });
+        });
+    });
+    $(document).ready(function(){
+        $("#LogoutBtn").on("click", function(){
+   $.ajax({
+        url: "https://localhost:7067/api/Logout",
+        type: "POST",
+        success: function() {
+            window.location = "/";
+        }
+        });
+           });
+     });
+
+    //cookileri javascrip ile temizlemek için 
+
+    // $("LogoutBtn").on("click", function(){
+    //     document.cookie.split(";").forEach(function(c){
+    //         document.cookie = c.replace(/^ +/,"").replace(/=.*/,"=;expires="+ new Date().toUTCString()+";path=/");
+    //     });
+    //     window.location.href ="/";
+    // })
+</script>
+
+@* <script>
+    const form = document.getElementById('reservationForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const reservationDto = {
+            UserId: parseInt(document.getElementById('userId').value),
+            CategoryId: parseInt(document.getElementById('categoryId').value),
+            ReservationDate: document.getElementById('reservationDate').value,
+            PeopleCount: parseInt(document.getElementById('peopleCount').value)
+        };
+
+        try {
+            const response = await fetch('/api/Reservation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reservationDto)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.hasError) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = data.message || 'Hata oluştu.';
+                successMsg.style.display = 'none';
+            } else {
+                successMsg.style.display = 'block';
+                successMsg.textContent = data.message || 'Rezervasyon başarılı!';
+                errorMsg.style.display = 'none';
+                form.reset();
+            }
+        } catch (err) {
+            errorMsg.style.display = 'block';
+            errorMsg.textContent = 'Sunucuya bağlanılamadı.';
+            successMsg.style.display = 'none';
+        }
+    });
+</script> *@

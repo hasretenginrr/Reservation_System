@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Reservation_System\\Reservation_System.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Reservation_SystemWPF\\Reservation_SystemWPF.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

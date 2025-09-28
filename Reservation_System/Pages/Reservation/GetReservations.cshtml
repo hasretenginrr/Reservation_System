@@ -1,0 +1,145 @@
+﻿
+@page
+
+@{
+    ViewData["Title"] = "My Reservations";
+    ViewBag.HideNavbar = true;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<div class="overlay">
+    <div class="top-bar d-flex justify-content-center align-items-center px-4 py-3">
+        <h1 class="welcome-text">Your <span>Reservations</span></h1>
+    </div>
+
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="reservation-card shadow-lg p-4 rounded-4 w-100">
+            <h2 class="mb-4 text-center">Reservation List</h2>
+
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover table-bordered text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>People Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservationTableBody">
+                        <!-- JS ile doldurulacak -->
+                    </tbody>
+                </table>
+            </div>
+
+                <button id="BackBtn" class="btn btn-outline-dark home-btn">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: url('/images/gg.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .overlay {
+        background: rgba(0, 0, 0, 0.5);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .welcome-text {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+        .welcome-text span {
+            background: linear-gradient(90deg, #ff9966, #ff5e62);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+    .reservation-card {
+        max-width: 900px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+    }
+
+    .home-btn {
+        border-radius: 30px;
+        font-weight: 600;
+        padding: 10px 20px;
+    }
+
+    #errorMsg {
+        border-radius: 15px;
+        text-align: center;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var userId = "@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value";
+        var role = "@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value";
+
+        var url = "";
+        if (role === "admin") {
+            url = "https://localhost:7067/api/Reservation"; 
+        } else {
+            url = "https://localhost:7067/api/Reservation/user/" + userId; 
+        }
+
+        $.get(url, function (data) {
+            if (!data || data.length === 0) {
+                $("#reservationTableBody").append(
+                    `<tr><td colspan="4" class="text-muted">No reservations found</td></tr>`
+                );
+            } else {
+                data.forEach(function (r) {
+                    $("#reservationTableBody").append(`
+                        <tr>
+                            <td>${r.categoryName || r.categoryId}</td>
+                            <td>${new Date(r.reservationDate).toLocaleDateString()}</td>
+                            <td>${r.peopleCount}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="${r.reservationId}">Delete</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            }
+        }).fail(function () {
+            $("#errorMsg").show().text("Failed to load reservations.");
+        });
+
+        // Geri dön
+        $("#BackBtn").on("click", function () {
+            window.location = "/Reservation/Reservation";
+        });
+
+        // Silme işlemi
+        $(document).on("click", ".delete-btn", function () {
+            var id = $(this).data("id");
+            $.ajax({
+                url: "https://localhost:7067/api/Reservation/" + id,
+                type: "DELETE",
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Could not delete reservation.");
+                }
+            });
+        });
+    });
+</script>
